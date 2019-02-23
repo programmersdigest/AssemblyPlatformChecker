@@ -8,15 +8,31 @@ AssemblyPlatformChecker.exe [-v] <searchPath>
 | --------- | ----------- |
 | searchPath | The path to search for portable executable (PE) files. If the path points to a file, this file is checked. If the path points to a directory, all executables contained in this directory and al its sub directories are checked. In case a relative path is supplied, it is considered relative to the AssemblyPlatformChecker executable. The path may be ommited, in which case the directory containing the AssemblyPlatformChecker executable is searched. |
 | -v | Activates verbose output which prints more information on each assembly. |
+| -f: | Filters the output by platform. Platforms to be displayed can be provided as a comma separated list. Valid platforms are: Native32, Native64, Dotnet32, Dotnet64, AnyCPU, AnyCPU32Preferred, Unknown. |
 | -h | Prints this help. |
 
 # Example output
 ```
 Found 4 executables in total. Checking...
-Assembly [...]\AssemblyPlatformChecker.exe is a platform agnostic .NET assembly
-Assembly [...]\AssemblyPlatformCheckerPrefer32Bit.exe is a platform agnostic .NET assembly preferring 32 bit
-Assembly [...]\AssemblyPlatformCheckerx64.exe is a 64 bit .NET assembly
-Assembly [...]\AssemblyPlatformCheckerx86.exe is a 32 bit .NET assembly
+Assembly [...]\AssemblyPlatformChecker.exe is a platform agnostic .NET assembly.
+Assembly [...]\AssemblyPlatformCheckerPrefer32Bit.exe is a platform agnostic .NET assembly preferring 32 bit.
+Assembly [...]\AssemblyPlatformCheckerx64.exe is a 64 bit .NET assembly.
+Assembly [...]\AssemblyPlatformCheckerx86.exe is a 32 bit .NET assembly.
+Done!
+```
+
+With -v -f:Dotnet32,Dotnet64
+```
+Found 4 executables in total. Checking...
+Assembly [...]\AssemblyPlatformCheckerx64.exe is a 64 bit .NET assembly (Dotnet64Bit).
+Assembly [...]\AssemblyPlatformCheckerx86.exe is a 32 bit .NET assembly (Dotnet32Bit).
+Done!
+```
+
+With -f:AnyCPU
+```
+Found 4 executables in total. Checking...
+Assembly [...]\AssemblyPlatformChecker.exe is a platform agnostic .NET assembly.
 Done!
 ```
 

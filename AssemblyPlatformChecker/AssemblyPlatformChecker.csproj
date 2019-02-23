@@ -44,6 +44,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="BinaryTypeFilters.cs" />
     <Compile Include="PeFileChecker.cs" />
     <Compile Include="BinaryType.cs" />
     <Compile Include="CommandArguments.cs" />

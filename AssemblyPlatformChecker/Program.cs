@@ -36,16 +36,17 @@ namespace AssemblyPlatformChecker
             Console.WriteLine("Checks assemblies for platform compatibility (x86, x64, AnyCPU).");
             Console.WriteLine();
             Console.WriteLine("Usage:");
-            Console.WriteLine("AssemblyPlatformChecker.exe [-v] <searchPath>");
+            Console.WriteLine("AssemblyPlatformChecker.exe [-v] [-f:filters] <searchPath>");
             Console.WriteLine("searchPath".PadRight(15) + "- The path to search for portable executable (PE) files. If the path points to a file, this file is checked. If the path points to a directory, all executables contained in this directory and al its sub directories are checked. In case a relative path is supplied, it is considered relative to the AssemblyPlatformChecker executable. The path may be ommited, in which case the directory containing the AssemblyPlatformChecker executable is searched.");
             Console.WriteLine("-v".PadRight(15) + "- Activates verbose output which prints more information on each assembly.");
+            Console.WriteLine("-f:".PadRight(15) + "- Filters the output by platform. Platforms to be displayed can be provided as a comma separated list. Valid platforms are: Native32, Native64, Dotnet32, Dotnet64, AnyCPU, AnyCPU32Preferred, Unknown.");
             Console.WriteLine("-h".PadRight(15) + "- Prints this help.");
         }
 
         /// <summary>
         /// Finds and checks all executables in the given search path.
         /// </summary>
-        /// <param name="commandArguments"></param>
+        /// <param name="commandArguments">The parsed command line arguments.</param>
         private static void CheckAssemblies(CommandArguments commandArguments)
         {
             var files = new ExecutableFileFinder().GetExecutables(commandArguments.SearchPath);
@@ -55,12 +56,49 @@ namespace AssemblyPlatformChecker
             foreach (var file in files)
             {
                 var binaryType = peFileChecker.GetBinaryType(file);
-                var message = PrepareAssemblyInformation(file, binaryType, commandArguments.Verbose);
-
-                Console.WriteLine(message);
+                if (ShouldDisplayAssemblyInformation(binaryType, commandArguments.Filters))
+                {
+                    var message = PrepareAssemblyInformation(file, binaryType, commandArguments.Verbose);
+                    Console.WriteLine(message);
+                }
             }
 
             Console.WriteLine("Done!");
+        }
+
+        /// <summary>
+        /// Checks whether to display the given binary type or not. If the binary type is contained
+        /// in the filters flags, it should get displayed and <c>true</c> is returned.
+        /// </summary>
+        /// <param name="binaryType">The detected binary type of the checked assembly.</param>
+        /// <param name="filters">The filters flags as read from the command line arguments.</param>
+        /// <returns><c>True</c> if the information should be displayed. <c>False</c> otherwise.</returns>
+        private static bool ShouldDisplayAssemblyInformation(BinaryType binaryType, BinaryTypeFilters filters)
+        {
+            if (filters == BinaryTypeFilters.All)
+            {
+                return true;
+            }
+
+            switch (binaryType)
+            {
+                case BinaryType.Unknown:
+                    return (filters & BinaryTypeFilters.Unknown) == BinaryTypeFilters.Unknown;
+                case BinaryType.Native32Bit:
+                    return (filters & BinaryTypeFilters.Native32) == BinaryTypeFilters.Native32;
+                case BinaryType.Native64Bit:
+                    return (filters & BinaryTypeFilters.Native64) == BinaryTypeFilters.Native64;
+                case BinaryType.Dotnet32Bit:
+                    return (filters & BinaryTypeFilters.Dotnet32) == BinaryTypeFilters.Dotnet32;
+                case BinaryType.Dotnet64Bit:
+                    return (filters & BinaryTypeFilters.Dotnet64) == BinaryTypeFilters.Dotnet64;
+                case BinaryType.DotnetAnyCpu:
+                    return (filters & BinaryTypeFilters.AnyCPU) == BinaryTypeFilters.AnyCPU;
+                case BinaryType.DotnetAnyCpuPrefer32Bit:
+                    return (filters & BinaryTypeFilters.AnyCPU32Preferred) == BinaryTypeFilters.AnyCPU32Preferred;
+            }
+
+            return true;
         }
 
         /// <summary>
@@ -101,10 +139,10 @@ namespace AssemblyPlatformChecker
 
             if (verbose)
             {
-                result += $"({binaryType})";
+                result += $" ({binaryType})";
             }
 
-            return result;
+            return result + ".";
         }
     }
 }
