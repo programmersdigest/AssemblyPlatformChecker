@@ -1,3 +1,4 @@
+[![Build status](https://ci.appveyor.com/api/projects/status/github/programmersdigest/AssemblyPlatformChecker?branch=master&svg=true)](https://ci.appveyor.com/api/projects/status/github/programmersdigest/AssemblyPlatformChecker?branch=master&svg=true)
 # AssemblyPlatformChecker
 Checks assemblies for platform compatibility (x86, x64, AnyCPU).
 
